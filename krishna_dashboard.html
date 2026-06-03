@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Krishna Mineral Water — Business Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #0f5c5f;
+    --teal-mid: #1a7a7d;
+    --teal-light: #2a9d8f;
+    --gold: #f4b942;
+    --gold-dark: #d49a2a;
+    --bg: #06181a;
+    --bg2: #0d2426;
+    --bg3: #122c2f;
+    --card: #0f2a2d;
+    --card2: #142f32;
+    --border: rgba(42,157,143,0.18);
+    --text: #e8f4f2;
+    --muted: #7ba8a5;
+    --white: #ffffff;
+    --red: #e05b5b;
+    --green: #3fcf8e;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 240px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    padding: 28px 0;
+  }
+
+  .logo-area {
+    padding: 0 24px 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-area h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--teal-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+  }
+
+  .logo-area span {
+    font-size: 0.72rem;
+    color: var(--muted);
+    display: block;
+    margin-top: 4px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+  }
+
+  .nav-menu {
+    margin-top: 20px;
+    flex: 1;
+    list-style: none;
+  }
+
+  .nav-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+  }
+
+  .nav-menu li a:hover, .nav-menu li a.active {
+    color: var(--text);
+    background: rgba(42,157,143,0.1);
+    border-left-color: var(--teal-light);
+  }
+
+  .nav-menu li a .icon { font-size: 1.1rem; width: 22px; text-align:center; }
+
+  .sidebar-footer {
+    padding: 20px 24px 0;
+    border-top: 1px solid var(--border);
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  .main {
+    margin-left: 240px;
+    min-height: 100vh;
+    padding: 28px 32px;
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+
+  .topbar-left h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--white);
+  }
+
+  .topbar-left p { color: var(--muted); font-size: 0.88rem; margin-top: 2px; }
+
+  .topbar-right { display: flex; gap: 12px; align-items: center; }
+
+  .date-badge {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .add-btn {
+    background: var(--gold);
+    color: #1a0a00;
+    border: none;
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .add-btn:hover { background: var(--gold-dark); transform: translateY(-1px); }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: 0.2s;
+  }
+
+  .kpi-card:hover { border-color: var(--teal-light); transform: translateY(-2px); }
+
+  .kpi-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    opacity: 0.07;
+    transform: translate(20px, -20px);
+  }
+
+  .kpi-card.green::after { background: var(--green); }
+  .kpi-card.gold::after { background: var(--gold); }
+  .kpi-card.teal::after { background: var(--teal-light); }
+  .kpi-card.red::after { background: var(--red); }
+
+  .kpi-label { font-size: 0.78rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; }
+  .kpi-value { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--white); line-height: 1; }
+  .kpi-sub { font-size: 0.78rem; margin-top: 8px; display: flex; align-items: center; gap: 5px; }
+  .kpi-sub.up { color: var(--green); }
+  .kpi-sub.down { color: var(--red); }
+  .kpi-icon { font-size: 1.4rem; margin-bottom: 10px; }
+
+  .charts-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .chart-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--white);
+  }
+
+  .chart-sub { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+  .tab-pills { display: flex; gap: 6px; }
+  .tab-pill {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tab-pill.active { background: var(--teal); color: var(--white); border-color: var(--teal); }
+  .tab-pill:hover:not(.active) { border-color: var(--teal-light); color: var(--text); }
+
+  canvas { max-width: 100%; }
+
+  .bottom-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  thead tr { border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.5px; padding: 0 0 12px; text-align: left; }
+  td { padding: 12px 0; color: var(--text); border-bottom: 1px solid rgba(42,157,143,0.08); }
+  tr:last-child td { border-bottom: none; }
+
+  .status-badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+  .status-badge.delivered { background: rgba(63,207,142,0.15); color: var(--green); }
+  .status-badge.pending { background: rgba(244,185,66,0.15); color: var(--gold); }
+  .status-badge.cancelled { background: rgba(224,91,91,0.15); color: var(--red); }
+
+  .product-list { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
+  .product-row { display: flex; align-items: center; gap: 12px; }
+  .product-name { font-size: 0.85rem; width: 140px; flex-shrink: 0; }
+  .product-bar-bg { flex: 1; background: rgba(42,157,143,0.1); border-radius: 4px; height: 8px; overflow: hidden; }
+  .product-bar { height: 100%; border-radius: 4px; transition: width 1s ease; }
+  .product-pct { font-size: 0.78rem; color: var(--muted); width: 40px; text-align: right; }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    width: 480px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.25s ease;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .modal h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 22px;
+    color: var(--white);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .modal-close:hover { color: var(--white); }
+
+  .form-group { margin-bottom: 16px; }
+  .form-group label { font-size: 0.8rem; color: var(--muted); display: block; margin-bottom: 6px; font-weight: 500; }
+
+  .form-group input, .form-group select {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: 0.2s;
+  }
+
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--teal-light);
+  }
+
+  .form-group select option { background: var(--bg2); }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .btn-save {
+    width: 100%;
+    background: var(--teal);
+    color: var(--white);
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: 0.2s;
+  }
+  .btn-save:hover { background: var(--teal-mid); }
+
+  .customers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .customer-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    transition: 0.2s;
+  }
+  .customer-card:hover { border-color: var(--teal-light); }
+
+  .cust-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+  .cust-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
+  .cust-stats { display: flex; gap: 20px; }
+  .cust-stat-val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--gold); }
+  .cust-stat-lbl { font-size: 0.72rem; color: var(--muted); }
+
+  .deliveries-full table { font-size: 0.88rem; }
+  .deliveries-full td, .deliveries-full th { padding: 13px 10px; }
+
+  .search-filter { display: flex; gap: 12px; margin-bottom: 20px; align-items: center; }
+  .search-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    width: 240px;
+    transition: 0.2s;
+  }
+  .search-box:focus { border-color: var(--teal-light); }
+  .filter-sel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    cursor: pointer;
+  }
+  .filter-sel option { background: var(--bg2); }
+
+  .toast {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    background: var(--teal);
+    color: var(--white);
+    padding: 12px 22px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    z-index: 300;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 1100px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .charts-row { grid-template-columns: 1fr; }
+    .bottom-row { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { width: 0; overflow: hidden; }
+    .main { margin-left: 0; padding: 20px 16px; }
+    .kpi-row { grid-template-columns: 1fr 1fr; }
+  }
+
+  .empty-state { text-align: center; padding: 40px; color: var(--muted); font-size: 0.9rem; }
+
+  .live-dot {
+    width: 8px; height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo-area">
+    <h1>Krishna Mineral<br>Water 💧</h1>
+    <span>Business Dashboard</span>
+  </div>
+  <ul class="nav-menu">
+    <li><a class="active" onclick="navigate('overview',this)"><span class="icon">📊</span> Overview</a></li>
+    <li><a onclick="navigate('deliveries',this)"><span class="icon"></span> Deliveries</a></li>
+    <li><a onclick="navigate('customers',this)"><span class="icon"></span> Customers</a></li>
+    <li><a onclick="navigate('analytics',this)"><span class="icon"></span> Analytics</a></li>
+  </ul>
+  <div class="sidebar-footer">
+    <span class="live-dot"></span>Live data · Aligarh, UP
+  </div>
+</aside>
+
+
+<main class="main">
+
+  
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2 id="page-title">Overview</h2>
+      <p id="page-sub">Today's snapshot for Krishna Mineral Water</p>
+    </div>
+    <div class="topbar-right">
+      <div class="date-badge" id="live-date"></div>
+      <button class="add-btn" onclick="openModal()">+ Add Delivery</button>
+    </div>
+  </div>
+
+  
+  <div id="sec-overview" class="section active">
+
+    
+    <div class="kpi-row">
+      <div class="kpi-card green">
+        <div class="kpi-icon">📦</div>
+        <div class="kpi-label">Bottles Today</div>
+        <div class="kpi-value" id="kpi-today">0</div>
+        <div class="kpi-sub up" id="kpi-today-sub">↑ vs yesterday</div>
+      </div>
+      <div class="kpi-card gold">
+        <div class="kpi-icon"></div>
+        <div class="kpi-label">This Month</div>
+        <div class="kpi-value" id="kpi-month">0</div>
+        <div class="kpi-sub up" id="kpi-month-sub">↑ bottles delivered</div>
+      </div>
+      <div class="kpi-card teal">
+        <div class="kpi-icon"></div>
+        <div class="kpi-label">Monthly Revenue</div>
+        <div class="kpi-value" id="kpi-revenue">₹0</div>
+        <div class="kpi-sub up" id="kpi-rev-sub">↑ profit trend</div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-icon">👥</div>
+        <div class="kpi-label">Active Customers</div>
+        <div class="kpi-value" id="kpi-customers">0</div>
+        <div class="kpi-sub up">↑ this month</div>
+      </div>
+    </div>
+
+    
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Deliveries & Revenue</div>
+            <div class="chart-sub">Monthly performance overview</div>
+          </div>
+          <div class="tab-pills">
+            <button class="tab-pill active" onclick="switchChart('bottles', this)">Bottles</button>
+            <button class="tab-pill" onclick="switchChart('revenue', this)">Revenue</button>
+          </div>
+        </div>
+        <canvas id="mainChart" height="220"></canvas>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Product Mix</div>
+            <div class="chart-sub">This month's breakdown</div>
+          </div>
+        </div>
+        <canvas id="donutChart" height="160"></canvas>
+        <div class="product-list" id="product-legend"></div>
+      </div>
+    </div>
+
+    
+    <div class="bottom-row">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Recent Deliveries</div>
+            <div class="chart-sub">Last 5 orders</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="recent-table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recent-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Daily Deliveries</div>
+            <div class="chart-sub">Last 7 days trend</div>
+          </div>
+        </div>
+        <canvas id="dailyChart" height="220"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  
+  <div id="sec-deliveries" class="section">
+    <div class="search-filter">
+      <input type="text" class="search-box" placeholder="🔍  Search customer, product..." oninput="filterDeliveries(this.value)">
+      <select class="filter-sel" onchange="filterByStatus(this.value)">
+        <option value="">All Status</option>
+        <option value="delivered">Delivered</option>
+        <option value="pending">Pending</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+    <div class="chart-card deliveries-full">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Phone</th>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>Amount (₹)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="all-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-customers" class="section">
+    <div class="customers-grid" id="customers-grid"></div>
+  </div>
+
+  <div id="sec-analytics" class="section">
+    <div class="charts-row" style="margin-bottom:18px;">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">📈 Profit Growth — Month by Month</div>
+            <div class="chart-sub">Revenue trend over the year</div>
+          </div>
+        </div>
+        <canvas id="profitChart" height="240"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">📦 Bottles per Month</div>
+            <div class="chart-sub">Yearly volume</div>
+          </div>
+        </div>
+        <canvas id="volumeChart" height="240"></canvas>
+      </div>
+    </div>
+    <div class="bottom-row">
+      <div class="chart-card">
+        <div class="chart-header"><div class="chart-title">Top Products by Revenue</div></div>
+        <div class="product-list" id="analytics-products"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header"><div class="chart-title">Delivery Status Split</div></div>
+        <canvas id="statusChart" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3>Add New Delivery</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Customer Name *</label>
+        <input type="text" id="m-name" placeholder="e.g. Ramesh Kumar">
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" id="m-phone" placeholder="10-digit number">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Product *</label>
+      <select id="m-product">
+        <option value="">Select product</option>
+        <option value="1L Pouch">1 Liter Pouch (₹5)</option>
+        <option value="20L Jar">20 Liter Jar (₹25)</option>
+        <option value="Pack of 10 (20L)">Pack of 10 — 20L (₹250)</option>
+        <option value="Corporate Plan">Corporate Plan</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Quantity *</label>
+        <input type="number" id="m-qty" placeholder="e.g. 5" min="1">
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="m-status">
+          <option value="delivered">Delivered</option>
+          <option value="pending">Pending</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="m-date">
+      </div>
+      <div class="form-group">
+        <label>Amount (₹)</label>
+        <input type="number" id="m-amount" placeholder="Auto-calculated" min="0">
+      </div>
+    </div>
+    <button class="btn-save" onclick="saveDelivery()">Save Delivery</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const PRICES = { '1L Pouch': 5, '20L Jar': 25, 'Pack of 10 (20L)': 250, 'Corporate Plan': 500 };
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function seedData() {
+  const existing = getDeliveries();
+  if (existing.length > 0) return;
+
+  const names = ['Ramesh Kumar','Sunita Devi','Mohd. Arif','Priya Sharma','Anil Verma','Geeta Bai','Vikram Singh','Ritu Gupta','Sanjay Yadav','Pooja Jain'];
+  const phones = ['9528641269','9876543210','8765432109','7654321098','9012345678','8901234567','7890123456','6789012345','9123456789','8234567890'];
+  const products = ['1L Pouch','20L Jar','20L Jar','Pack of 10 (20L)','20L Jar','1L Pouch','Pack of 10 (20L)','20L Jar','20L Jar','Corporate Plan'];
+  const statuses = ['delivered','delivered','delivered','delivered','pending','delivered','delivered','cancelled','delivered','delivered'];
+
+  const now = new Date();
+  const deliveries = [];
+
+  for (let m = 0; m < 8; m++) {
+    const daysInMonth = 28;
+    const baseDeliveries = 60 + m * 12; 
+    const perDay = Math.ceil(baseDeliveries / daysInMonth);
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const numToday = perDay + Math.floor(Math.random() * 4 - 1);
+      for (let i = 0; i < numToday; i++) {
+        const ni = Math.floor(Math.random() * names.length);
+        const pi = (m + i) % products.length;
+        const qty = products[pi] === '1L Pouch' ? (5 + Math.floor(Math.random()*20)) : (1 + Math.floor(Math.random()*5));
+        const amount = qty * PRICES[products[pi]];
+
+        const date = new Date(now.getFullYear(), now.getMonth() - (7 - m), d);
+        const statusRoll = Math.random();
+        const status = statusRoll > 0.9 ? 'cancelled' : statusRoll > 0.75 ? 'pending' : 'delivered';
+
+        deliveries.push({
+          id: `d_${m}_${d}_${i}`,
+          name: names[ni],
+          phone: phones[ni],
+          product: products[pi],
+          qty,
+          amount,
+          status,
+          date: date.toISOString().split('T')[0]
+        });
+      }
+    }
+  }
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  for (let i = 0; i < 8; i++) {
+    const ni = i % names.length;
+    const pi = i % products.length;
+    const qty = products[pi] === '1L Pouch' ? 10 : 2;
+    deliveries.push({
+      id: `today_${i}`,
+      name: names[ni],
+      phone: phones[ni],
+      product: products[pi],
+      qty,
+      amount: qty * PRICES[products[pi]],
+      status: i < 6 ? 'delivered' : 'pending',
+      date: todayStr
+    });
+  }
+
+  localStorage.setItem('kmw_deliveries', JSON.stringify(deliveries));
+}
+
+function getDeliveries() {
+  return JSON.parse(localStorage.getItem('kmw_deliveries') || '[]');
+}
+
+function saveDeliveries(arr) {
+  localStorage.setItem('kmw_deliveries', JSON.stringify(arr));
+}
+
+
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+function thisMonth() { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`; }
+
+function calcKPIs() {
+  const deliveries = getDeliveries();
+  const today = todayStr();
+  const month = thisMonth();
+
+  let todayBottles = 0, monthBottles = 0, monthRevenue = 0;
+  const customerSet = new Set();
+
+  deliveries.forEach(d => {
+    if (d.status === 'cancelled') return;
+    customerSet.add(d.phone || d.name);
+    if (d.date === today) todayBottles += d.qty;
+    if (d.date && d.date.startsWith(month)) {
+      monthBottles += d.qty;
+      monthRevenue += d.amount || 0;
+    }
+  });
+
+  return { todayBottles, monthBottles, monthRevenue, customers: customerSet.size };
+}
+
+
+let mainChartInst, donutChartInst, dailyChartInst, profitChartInst, volumeChartInst, statusChartInst;
+let currentChartMode = 'bottles';
+
+const CHART_DEFAULTS = {
+  responsive: true,
+  plugins: { legend: { display: false }, tooltip: { callbacks: {} } },
+  scales: {}
+};
+
+function getMonthlyData() {
+  const deliveries = getDeliveries();
+  const now = new Date();
+  const data = {};
+
+  for (let i = 7; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    data[key] = { bottles: 0, revenue: 0, label: MONTHS[d.getMonth()] };
+  }
+
+  deliveries.forEach(d => {
+    if (!d.date || d.status === 'cancelled') return;
+    const key = d.date.substring(0, 7);
+    if (data[key]) {
+      data[key].bottles += d.qty;
+      data[key].revenue += d.amount || 0;
+    }
+  });
+
+  return Object.values(data);
+}
+
+function getDailyData() {
+  const deliveries = getDeliveries();
+  const now = new Date();
+  const data = {};
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now); d.setDate(d.getDate() - i);
+    const key = d.toISOString().split('T')[0];
+    const label = i === 0 ? 'Today' : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
+    data[key] = { label, bottles: 0 };
+  }
+  deliveries.forEach(d => {
+    if (d.date && data[d.date] && d.status !== 'cancelled') data[d.date].bottles += d.qty;
+  });
+  return Object.values(data);
+}
+
+function getProductMix() {
+  const deliveries = getDeliveries();
+  const month = thisMonth();
+  const mix = { '1L Pouch': 0, '20L Jar': 0, 'Pack of 10 (20L)': 0, 'Corporate Plan': 0 };
+  deliveries.forEach(d => {
+    if (d.date && d.date.startsWith(month) && d.status !== 'cancelled' && mix[d.product] !== undefined) {
+      mix[d.product] += d.amount || 0;
+    }
+  });
+  return mix;
+}
+
+function buildMainChart() {
+  const monthly = getMonthlyData();
+  const labels = monthly.map(m => m.label);
+  const isRevenue = currentChartMode === 'revenue';
+  const values = isRevenue ? monthly.map(m => m.revenue) : monthly.map(m => m.bottles);
+  const color = isRevenue ? '#f4b942' : '#2a9d8f';
+
+  if (mainChartInst) mainChartInst.destroy();
+  const ctx = document.getElementById('mainChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 220);
+  gradient.addColorStop(0, isRevenue ? 'rgba(244,185,66,0.3)' : 'rgba(42,157,143,0.3)');
+  gradient.addColorStop(1, 'rgba(0,0,0,0)');
+
+  mainChartInst = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        borderColor: color,
+        backgroundColor: gradient,
+        borderWidth: 2.5,
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: color,
+        pointRadius: 4,
+        pointHoverRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => isRevenue ? `₹${ctx.parsed.y.toLocaleString()}` : `${ctx.parsed.y} bottles` } }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(42,157,143,0.08)' }, ticks: { color: '#7ba8a5', font: { size: 11 } } },
+        y: { grid: { color: 'rgba(42,157,143,0.08)' }, ticks: { color: '#7ba8a5', font: { size: 11 } } }
+      }
+    }
+  });
+}
+
+function buildDonutChart() {
+  const mix = getProductMix();
+  const labels = Object.keys(mix);
+  const values = Object.values(mix);
+  const colors = ['#2a9d8f','#f4b942','#e05b5b','#6c8ebf'];
+  const total = values.reduce((a,b) => a+b, 0);
+
+  if (donutChartInst) donutChartInst.destroy();
+  const ctx = document.getElementById('donutChart').getContext('2d');
+  donutChartInst = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 6 }] },
+    options: {
+      responsive: true,
+      cutout: '70%',
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `₹${ctx.parsed.toLocaleString()}` } } }
+    }
+  });
+
+  // Legend
+  const leg = document.getElementById('product-legend');
+  leg.innerHTML = labels.map((l, i) => {
+    const pct = total ? Math.round(values[i]/total*100) : 0;
+    return `<div class="product-row">
+      <div class="product-name" style="font-size:0.8rem;color:var(--text)">${l}</div>
+      <div class="product-bar-bg"><div class="product-bar" style="width:${pct}%;background:${colors[i]}"></div></div>
+      <div class="product-pct">${pct}%</div>
+    </div>`;
+  }).join('');
+}
+
+function buildDailyChart() {
+  const daily = getDailyData();
+  const labels = daily.map(d => d.label);
+  const values = daily.map(d => d.bottles);
+  const colors = values.map((v, i) => i === values.length-1 ? '#f4b942' : '#2a9d8f');
+
+  if (dailyChartInst) dailyChartInst.destroy();
+  const ctx = document.getElementById('dailyChart').getContext('2d');
+  dailyChartInst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: colors, borderRadius: 8, borderSkipped: false }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.parsed.y} bottles` } } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#7ba8a5', font: { size: 11 } } },
+        y: { grid: { color: 'rgba(42,157,143,0.08)' }, ticks: { color: '#7ba8a5', font: { size: 11 } } }
+      }
+    }
+  });
+}
+
+function buildAnalyticsCharts() {
+  const monthly = getMonthlyData();
+
+  if (profitChartInst) profitChartInst.destroy();
+  const pCtx = document.getElementById('profitChart').getContext('2d');
+  const pGrad = pCtx.createLinearGradient(0,0,0,240);
+  pGrad.addColorStop(0,'rgba(244,185,66,0.35)');
+  pGrad.addColorStop(1,'rgba(0,0,0,0)');
+
+  profitChartInst = new Chart(pCtx, {
+    type: 'line',
+    data: {
+      labels: monthly.map(m => m.label),
+      datasets: [{
+        data: monthly.map(m => m.revenue),
+        borderColor: '#f4b942',
+        backgroundColor: pGrad,
+        borderWidth: 2.5,
+        fill: true,
+        tension: 0.45,
+        pointBackgroundColor: '#f4b942',
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend:{display:false}, tooltip:{callbacks:{label: c => `₹${c.parsed.y.toLocaleString()}`}} },
+      scales: {
+        x: { grid:{color:'rgba(42,157,143,0.08)'}, ticks:{color:'#7ba8a5',font:{size:11}} },
+        y: { grid:{color:'rgba(42,157,143,0.08)'}, ticks:{color:'#7ba8a5',font:{size:11},callback:v=>`₹${v}`} }
+      }
+    }
+  });
+
+  if (volumeChartInst) volumeChartInst.destroy();
+  const vCtx = document.getElementById('volumeChart').getContext('2d');
+  volumeChartInst = new Chart(vCtx, {
+    type: 'bar',
+    data: {
+      labels: monthly.map(m => m.label),
+      datasets: [{
+        data: monthly.map(m => m.bottles),
+        backgroundColor: monthly.map((_,i) => i === monthly.length-1 ? '#2a9d8f' : 'rgba(42,157,143,0.45)'),
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.parsed.y} bottles`}} },
+      scales: {
+        x: { grid:{display:false}, ticks:{color:'#7ba8a5',font:{size:11}} },
+        y: { grid:{color:'rgba(42,157,143,0.08)'}, ticks:{color:'#7ba8a5',font:{size:11}} }
+      }
+    }
+  });
+
+  const mix = getProductMix();
+  const sortedProducts = Object.entries(mix).sort((a,b)=>b[1]-a[1]);
+  const totalRev = sortedProducts.reduce((s,e)=>s+e[1],0);
+  const colors = ['#f4b942','#2a9d8f','#e05b5b','#6c8ebf'];
+  document.getElementById('analytics-products').innerHTML = sortedProducts.map(([name, rev], i) => {
+    const pct = totalRev ? Math.round(rev/totalRev*100) : 0;
+    return `<div class="product-row">
+      <div class="product-name" style="font-size:0.82rem">${name}</div>
+      <div class="product-bar-bg"><div class="product-bar" style="width:${pct}%;background:${colors[i]}"></div></div>
+      <div class="product-pct" style="width:80px;color:var(--text)">₹${rev.toLocaleString()}</div>
+    </div>`;
+  }).join('');
+
+  const deliveries = getDeliveries();
+  const statusCount = { Delivered: 0, Pending: 0, Cancelled: 0 };
+  deliveries.forEach(d => {
+    if (d.status === 'delivered') statusCount.Delivered++;
+    else if (d.status === 'pending') statusCount.Pending++;
+    else statusCount.Cancelled++;
+  });
+  if (statusChartInst) statusChartInst.destroy();
+  const sCtx = document.getElementById('statusChart').getContext('2d');
+  statusChartInst = new Chart(sCtx, {
+    type: 'pie',
+    data: {
+      labels: Object.keys(statusCount),
+      datasets: [{
+        data: Object.values(statusCount),
+        backgroundColor: ['#2a9d8f','#f4b942','#e05b5b'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true, labels: { color: '#7ba8a5', font: { size: 11 }, padding: 12 } }
+      }
+    }
+  });
+}
+
+
+function updateKPIs() {
+  const k = calcKPIs();
+  document.getElementById('kpi-today').textContent = k.todayBottles;
+  document.getElementById('kpi-month').textContent = k.monthBottles;
+  document.getElementById('kpi-revenue').textContent = '₹' + k.monthRevenue.toLocaleString('en-IN');
+  document.getElementById('kpi-customers').textContent = k.customers;
+}
+
+function updateRecentTable() {
+  const deliveries = getDeliveries().slice(-5).reverse();
+  const tbody = document.getElementById('recent-tbody');
+  if (!deliveries.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No deliveries yet. Add your first one!</td></tr>'; return; }
+  tbody.innerHTML = deliveries.map(d => `
+    <tr>
+      <td>${d.name}</td>
+      <td>${d.product}</td>
+      <td>${d.qty}</td>
+      <td>₹${d.amount}</td>
+      <td><span class="status-badge ${d.status}">${d.status}</span></td>
+    </tr>`).join('');
+}
+
+function updateAllDeliveries(search='', statusFilter='') {
+  let deliveries = getDeliveries().reverse();
+  if (search) deliveries = deliveries.filter(d => (d.name+d.product).toLowerCase().includes(search.toLowerCase()));
+  if (statusFilter) deliveries = deliveries.filter(d => d.status === statusFilter);
+  const tbody = document.getElementById('all-tbody');
+  if (!deliveries.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No deliveries found.</td></tr>'; return; }
+  tbody.innerHTML = deliveries.map(d => `
+    <tr>
+      <td>${d.date || '—'}</td>
+      <td>${d.name}</td>
+      <td>${d.phone || '—'}</td>
+      <td>${d.product}</td>
+      <td>${d.qty}</td>
+      <td>₹${d.amount}</td>
+      <td><span class="status-badge ${d.status}">${d.status}</span></td>
+    </tr>`).join('');
+}
+
+function updateCustomers() {
+  const deliveries = getDeliveries();
+  const cMap = {};
+  deliveries.forEach(d => {
+    const key = d.phone || d.name;
+    if (!cMap[key]) cMap[key] = { name: d.name, phone: d.phone, orders: 0, revenue: 0, product: d.product };
+    if (d.status !== 'cancelled') { cMap[key].orders++; cMap[key].revenue += d.amount || 0; }
+  });
+  const sorted = Object.values(cMap).sort((a,b) => b.revenue - a.revenue);
+  document.getElementById('customers-grid').innerHTML = sorted.map(c => `
+    <div class="customer-card">
+      <div class="cust-name">${c.name}</div>
+      <div class="cust-meta">${c.phone || 'No phone'} · Fav: ${c.product}</div>
+      <div class="cust-stats">
+        <div><div class="cust-stat-val">${c.orders}</div><div class="cust-stat-lbl">Orders</div></div>
+        <div><div class="cust-stat-val">₹${c.revenue.toLocaleString('en-IN')}</div><div class="cust-stat-lbl">Revenue</div></div>
+      </div>
+    </div>`).join('');
+}
+
+
+function navigate(page, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
+  document.getElementById(`sec-${page}`).classList.add('active');
+  el.classList.add('active');
+
+  const titles = { overview: ['Overview', "Today's snapshot for Krishna Mineral Water"], deliveries: ['All Deliveries', 'Full delivery history'], customers: ['Customers', 'Customer profiles & stats'], analytics: ['Analytics', 'Profit growth & trends'] };
+  document.getElementById('page-title').textContent = titles[page][0];
+  document.getElementById('page-sub').textContent = titles[page][1];
+
+  if (page === 'overview') { buildMainChart(); buildDonutChart(); buildDailyChart(); updateRecentTable(); }
+  if (page === 'deliveries') updateAllDeliveries();
+  if (page === 'customers') updateCustomers();
+  if (page === 'analytics') buildAnalyticsCharts();
+}
+
+function switchChart(mode, el) {
+  currentChartMode = mode;
+  document.querySelectorAll('.tab-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  buildMainChart();
+}
+
+function filterDeliveries(val) { updateAllDeliveries(val, document.querySelector('.filter-sel').value); }
+function filterByStatus(val) { updateAllDeliveries(document.querySelector('.search-box').value, val); }
+
+
+function openModal() {
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('m-date').value = todayStr();
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+document.getElementById('m-product').addEventListener('change', function() {
+  const qty = parseInt(document.getElementById('m-qty').value) || 1;
+  const price = PRICES[this.value] || 0;
+  document.getElementById('m-amount').value = qty * price;
+});
+
+document.getElementById('m-qty').addEventListener('input', function() {
+  const product = document.getElementById('m-product').value;
+  const price = PRICES[product] || 0;
+  document.getElementById('m-amount').value = parseInt(this.value||0) * price;
+});
+
+function saveDelivery() {
+  const name = document.getElementById('m-name').value.trim();
+  const product = document.getElementById('m-product').value;
+  const qty = parseInt(document.getElementById('m-qty').value);
+
+  if (!name || !product || !qty) { showToast('Please fill all required fields!'); return; }
+
+  const delivery = {
+    id: 'u_' + Date.now(),
+    name,
+    phone: document.getElementById('m-phone').value.trim(),
+    product,
+    qty,
+    amount: parseInt(document.getElementById('m-amount').value) || qty * (PRICES[product]||0),
+    status: document.getElementById('m-status').value,
+    date: document.getElementById('m-date').value || todayStr()
+  };
+
+  const arr = getDeliveries();
+  arr.push(delivery);
+  saveDeliveries(arr);
+  closeModal();
+  document.getElementById('m-name').value=''; document.getElementById('m-phone').value='';
+  document.getElementById('m-product').value=''; document.getElementById('m-qty').value='';
+  document.getElementById('m-amount').value='';
+  refreshAll();
+  showToast('✅ Delivery added successfully!');
+}
+
+function refreshAll() {
+  updateKPIs();
+  buildMainChart();
+  buildDonutChart();
+  buildDailyChart();
+  updateRecentTable();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+
+function setDate() {
+  const now = new Date();
+  document.getElementById('live-date').textContent = now.toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+}
+
+
+seedData();
+updateKPIs();
+buildMainChart();
+buildDonutChart();
+buildDailyChart();
+updateRecentTable();
+setDate();
+</script>
+</body>
+</html>
